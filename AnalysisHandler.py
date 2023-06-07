@@ -16,8 +16,8 @@ class ProjectAnalysisHandler(tornado.web.RequestHandler):
         ip = ip.split(',')[0].strip()
 
         logger.info(f"request ip is: {ip}")
-        if ip in white_list:
-            self.finish({"code": -1, "answer": None})
+        if ip not in white_list:
+            self.finish({"code": 24001, "answer": None})
 
     def post(self):
         """项目数据分析接口
