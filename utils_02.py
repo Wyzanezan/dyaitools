@@ -32,16 +32,40 @@ class Conversation(object):
         try:
             encoding = tiktoken.encoding_for_model(self.model)
         except KeyError:
-            logger.info("Warning: model not found. Using cl100k_base encoding.")
+            print("Warning: model not found. Using cl100k_base encoding.")
             encoding = tiktoken.get_encoding("cl100k_base")
 
-        ret = encoding.encode(self.prompt)
-        return len(ret)
+        if self.model == "gpt-3.5-turbo":
+            logger.info("Warning: gpt-3.5-turbo may change over time. Returning num tokens assuming gpt-3.5-turbo-0301.")
+            return self.check_data_length()
+        elif self.model == "gpt-4":
+            logger.info("Warning: gpt-4 may change over time. Returning num tokens assuming gpt-4-0314.")
+            return self.check_data_length()
+        elif self.model == "gpt-3.5-turbo-0301":
+            tokens_per_message = 4
+            tokens_per_name = -1
+        elif self.model == "gpt-4-0314":
+            tokens_per_message = 3
+            tokens_per_name = 1
+        else:
+            return None
+
+        num_tokens = 0
+        for message in self.messages:
+            num_tokens += tokens_per_message
+            for key, value in message.items():
+                num_tokens += len(encoding.encode(value))
+                if key == "name":
+                    num_tokens += tokens_per_name
+        num_tokens += 3
+        return num_tokens
 
     def ask_question(self, message):
         request_tokens = self.check_data_length()
         logger.info(f"request tokens num: {request_tokens}")
 
+        if request_tokens is None:
+            return 24001, "system error"
         if request_tokens > self.data_length:
             return 24003, "data too long"
 
