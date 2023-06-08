@@ -20,8 +20,7 @@ class Conversation(object):
         self.messages = []
         self.messages.append({"role": 'system', "content": self.prompt})
 
-    def get_answer(self, message):
-        self.messages.append({"role": 'user', "content": message})
+    def get_answer(self):
         response = openai.ChatCompletion.create(
             model=self.model,
             messages=self.messages,
@@ -61,6 +60,7 @@ class Conversation(object):
         return num_tokens
 
     def ask_question(self, message):
+        self.messages.append({"role": 'user', "content": message})
         request_tokens = self.check_data_length()
         logger.info(f"request tokens num: {request_tokens}")
 
@@ -70,12 +70,12 @@ class Conversation(object):
             return 24003, "data too long"
 
         try:
-            response = self.get_answer(message)
+            response = self.get_answer()
         except openai.error.RateLimitError:
             logger.info("request open ai rate limit, retry again ... ")
 
             try:
-                response = self.get_answer(message)
+                response = self.get_answer()
             except Exception as e:
                 logger.info(f"request open ai exception: {traceback.format_exc()}")
                 response = None
