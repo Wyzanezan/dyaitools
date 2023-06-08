@@ -5,7 +5,7 @@ import time
 import tornado.web
 
 from config import logger, white_list
-from utils import Conversation
+from utils_02 import Conversation
 
 
 class ProjectAnalysisHandler(tornado.web.RequestHandler):
@@ -24,11 +24,12 @@ class ProjectAnalysisHandler(tornado.web.RequestHandler):
         """
         start_time = time.time()
         prompt = self.get_body_argument("prompt")
-        logger.info(f"request prompt info is: {prompt}")
+        message = self.get_body_argument("message")
+        logger.info(f"request prompt info is: {prompt}, message is: {message}")
 
         # 调用openai接口
         con = Conversation(prompt)
-        response = con.ask_question()
+        response = con.ask_question(message)
         resp_code, answer = response[0], response[1]
         logger.info(f"answer info is: {answer}")
 
