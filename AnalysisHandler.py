@@ -5,7 +5,7 @@ import time
 import tornado.web
 
 from config import logger, white_list
-from utils_02 import Conversation
+from utils_02 import Conversation, ConversationStream
 
 
 class ProjectAnalysisHandler(tornado.web.RequestHandler):
@@ -28,10 +28,19 @@ class ProjectAnalysisHandler(tornado.web.RequestHandler):
         logger.info(f"request prompt info is: {prompt}, message is: {message}")
 
         # 调用openai接口
-        con = Conversation(prompt)
+        # con = Conversation(prompt)
+        con = ConversationStream(prompt)
         response = con.ask_question(message)
         resp_code, answer = response[0], response[1]
         logger.info(f"answer info is: {answer}")
 
-        logger.info(f"response time: {time.time() - start_time}")
-        self.write({"code": resp_code, "answer": answer})
+        if resp_code != 1000:
+            self.write({"code": resp_code, "answer": answer})
+
+        self.set_header("Content-type", "application/stream")
+        for resp in response:
+            content = resp["choice"][0]["delta"]["content"]
+            logger.info(f"content: {content}")
+            self.write({"code": resp_code, "answer": content})
+
+
