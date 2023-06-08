@@ -17,7 +17,7 @@ options = {
 
 # 基本配置信息
 settings = {
-    "debug": True,
+    "debug": False,
 }
 
 
@@ -35,7 +35,6 @@ handler.setLevel(logging.INFO)
 
 MAX_BYTES = 500 * 1024 * 1024
 log_path = BASE_DIR + "/logs/aitools.log"
-# file_handler = logging.FileHandler(log_path)
 file_handler = logging.handlers.RotatingFileHandler(log_path, maxBytes=MAX_BYTES, backupCount=3)
 file_handler.setLevel(logging.INFO)
 
