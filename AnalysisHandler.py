@@ -5,7 +5,7 @@ import time
 import tornado.web
 
 from config import logger, white_list
-from utils_02 import Conversation, ConversationStream
+from utils_02 import Conversation
 
 
 class ProjectAnalysisHandler(tornado.web.RequestHandler):

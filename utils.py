@@ -8,7 +8,7 @@ import tiktoken
 
 from config import logger
 
-openai.api_key = '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'
+openai.api_key = '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'
 
 
 class Conversation(object):
