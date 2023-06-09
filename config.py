@@ -17,7 +17,7 @@ options = {
 
 # 基本配置信息
 settings = {
-    "debug": False,
+    "debug": True,
 }
 
 
