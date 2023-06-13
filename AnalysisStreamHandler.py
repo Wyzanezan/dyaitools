@@ -37,7 +37,7 @@ class ProjectAnalysisStreamHandler(tornado.web.RequestHandler):
         response = con.ask_question(message)
         resp_code, answer = response[0], response[1]
         if resp_code != 1000:
-            self.write(resp_code)
+            self.write(str(resp_code))
 
         request_tokens = answer["request_tokens"]
         answer = answer["response"]
