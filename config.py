@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(__file__)
 
 # 参数
 options = {
-    "port": 9000,
+    "port": 9001,
 }
 
 

@@ -23,7 +23,8 @@ class ProjectAnalysisStreamHandler(tornado.web.RequestHandler):
 
         logger.info(f"request ip is: {ip}")
         if ip not in white_list:
-            self.finish({"code": 24001, "answer": None})
+            self.write('24001')
+            self.flush()
 
     def post(self):
         """项目数据分析接口
@@ -38,19 +39,20 @@ class ProjectAnalysisStreamHandler(tornado.web.RequestHandler):
         resp_code, answer = response[0], response[1]
         if resp_code != 1000:
             self.write(str(resp_code))
+            self.flush()
+        else:
+            request_tokens = answer["request_tokens"]
+            answer = answer["response"]
+            completion = ''
+            for ans in answer:
+                delta = ans["choices"][0]["delta"]
+                if 'content' in delta:
+                    content = delta["content"]
+                    completion += content
+                    self.write(content + "\n\n")
+                    self.flush()
 
-        request_tokens = answer["request_tokens"]
-        answer = answer["response"]
-        completion = ''
-        for ans in answer:
-            delta = ans["choices"][0]["delta"]
-            if 'content' in delta:
-                content = delta["content"]
-                completion += content
-                self.write(content + "\n\n")
-                self.flush()
+            logger.info(f"completion is: {completion}")
 
-        logger.info(f"completion is: {completion}")
-
-        cost_tokens = get_data_length(completion)
-        self.write("content finish-" + str(request_tokens) + "-" + str(cost_tokens))
+            cost_tokens = get_data_length(completion)
+            self.write("content finish-" + str(request_tokens) + "-" + str(cost_tokens))
