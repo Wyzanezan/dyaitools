@@ -22,8 +22,8 @@ class ProjectAnalysisStreamHandler(tornado.web.RequestHandler):
         ip = ip.split(',')[0].strip()
 
         logger.info(f"request ip is: {ip}")
-        # if ip not in white_list:
-        #     self.finish({"code": 24001, "answer": None})
+        if ip not in white_list:
+            self.finish({"code": 24001, "answer": None})
 
     def post(self):
         """项目数据分析接口
@@ -46,10 +46,11 @@ class ProjectAnalysisStreamHandler(tornado.web.RequestHandler):
             delta = ans["choices"][0]["delta"]
             if 'content' in delta:
                 content = delta["content"]
-                print(content)
                 completion += content
                 self.write(content + "\n\n")
                 self.flush()
+
+        logger.info(f"completion is: {completion}")
 
         cost_tokens = get_data_length(completion)
         self.write("content finish-" + str(request_tokens) + "-" + str(cost_tokens))
