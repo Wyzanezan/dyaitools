@@ -11,13 +11,13 @@ BASE_DIR = os.path.dirname(__file__)
 
 # 参数
 options = {
-    "port": 9001,
+    "port": 9000,
 }
 
 
 # 基本配置信息
 settings = {
-    "debug": True,
+    "debug": False,
 }
 
 
